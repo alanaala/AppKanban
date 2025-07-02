@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+<EditText
+    android:id="@+id/edtTitulo"
+    android:hint="Título"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+
+<EditText
+    android:id="@+id/edtDescricao"
+    android:hint="Descrição"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"/>
+
+<Spinner
+    android:id="@+id/spinnerStatus"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"/>
+
+<ImageView
+    android:id="@+id/imgPreview"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:layout_marginTop="8dp"
+    android:scaleType="centerCrop"/>
+
+<Button
+    android:id="@+id/btnSalvar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Salvar"
+    android:layout_marginTop="12dp"/>
+
+<Button
+    android:id="@+id/btnExcluir"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Excluir"
+    android:layout_marginTop="8dp"
+    android:backgroundTint="#D32F2F"
+    android:textColor="#FFFFFF"/>
+    </LinearLayout>
+</ScrollView>

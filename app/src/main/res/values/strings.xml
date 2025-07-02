@@ -1,0 +1,9 @@
+<resources>
+
+    <string name="app_name">Kanban</string>
+    <string-array name="status_array">
+        <item>A FAZER</item>
+        <item>EM ANDAMENTO</item>
+        <item>CONCLUÍDO</item>
+    </string-array>
+</resources>
