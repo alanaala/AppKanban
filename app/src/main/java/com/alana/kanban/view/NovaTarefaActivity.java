@@ -1,19 +1,16 @@
 package com.alana.kanban.view;
 
-import static android.provider.Settings.System.getString;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.widget.*;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alana.kanban.R;
-import com.alana.kanban.camera.Camera;
 import com.alana.kanban.controller.ItemController;
 import com.alana.kanban.model.Item;
 
@@ -27,6 +24,8 @@ public class NovaTarefaActivity extends AppCompatActivity {
     Uri imagemUri;
     ItemController db;
     final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int CAMERA_REQUEST = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +38,8 @@ public class NovaTarefaActivity extends AppCompatActivity {
         imgPreview = findViewById(R.id.imgPreview);
         Button btnSalvar = findViewById(R.id.btnSalvar);
         Button btnCamera = findViewById(R.id.btnCamera);
+        Button btnSelecionarImagem = findViewById(R.id.btnSelecionarImagem);
+        Button btnVoltar = findViewById(R.id.btnVoltar);
 
         db = new ItemController(getApplicationContext());
 
@@ -49,23 +50,39 @@ public class NovaTarefaActivity extends AppCompatActivity {
 
         btnCamera.setOnClickListener(v -> abrirCamera());
         btnSalvar.setOnClickListener(v -> salvar());
+
+        btnSelecionarImagem.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            startActivityForResult(Intent.createChooser(intent, "Selecione uma imagem"), PICK_IMAGE_REQUEST);
+
+        });
+
+        btnVoltar.setOnClickListener(v -> {
+            startActivity(new Intent(NovaTarefaActivity.this, MainActivity.class));
+        });
+
     }
 
     private void abrirCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
+        startActivityForResult(intent, 1);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK && data != null) {
-            Bitmap foto = (Bitmap) data.getExtras().get("data");
-            imgPreview.setImageBitmap(foto);
-
-            Uri uri = getImageUri(foto);
-            imagemUri = uri;
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PICK_IMAGE_REQUEST && data != null && data.getData() != null) {
+                Uri imageUri = data.getData();
+                imgPreview.setImageURI(imageUri);
+            } else if (requestCode == CAMERA_REQUEST && data != null && data.getExtras() != null) {
+                Bitmap foto = (Bitmap) data.getExtras().get("data");
+                imgPreview.setImageBitmap(foto);
+                Uri uri = getImageUri(foto);
+            }
         }
     }
 
@@ -97,26 +114,5 @@ public class NovaTarefaActivity extends AppCompatActivity {
         Toast.makeText(this, "Tarefa salva!", Toast.LENGTH_SHORT).show();
         finish();
     }
-    private boolean safeCameraOpen(int id, boolean camera) {
-        boolean qOpened = false;
 
-        try {
-            releaseCameraAndPreview();
-            camera = Camera.Camera.open(id);
-            qOpened = (camera != null);
-        } catch (Exception e) {
-            Log.e(getString(R.string.app_name), "failed to open Camera");
-            e.printStackTrace();
-        }
-
-        return qOpened;
-    }
-
-    private void releaseCameraAndPreview() {
-        preview.setCamera(null);
-        if (camera != null) {
-            camera.release();
-            camera = null;
-        }
-    }
 }

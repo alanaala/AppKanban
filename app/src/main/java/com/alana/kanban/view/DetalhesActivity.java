@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.widget.*;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -20,23 +21,11 @@ public class DetalhesActivity extends AppCompatActivity {
     private EditText edtTitulo, edtDescricao;
     private Spinner spinnerStatus;
     private ImageView imgPreview;
-    private Button btnSalvar, btnExcluir, btnSelecionarImagem;
+    private Button btnSalvar, btnExcluir;
 
     private ItemController itemController;
     private Item item;
     private int tarefaId;
-
-    private final ActivityResultLauncher<Intent> abrirGaleriaLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                    result -> {
-                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Uri imagemSelecionada = result.getData().getData();
-                            if (imagemSelecionada != null) {
-                                imgPreview.setImageURI(imagemSelecionada);
-                                item.setImagemUri(imagemSelecionada.toString());
-                            }
-                        }
-                    });
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -50,7 +39,6 @@ public class DetalhesActivity extends AppCompatActivity {
         imgPreview = findViewById(R.id.imgPreview);
         btnSalvar = findViewById(R.id.btnSalvar);
         btnExcluir = findViewById(R.id.btnExcluir);
-        btnSelecionarImagem = findViewById(R.id.btnSelecionarImagem);
 
         itemController = new ItemController(getApplicationContext());
 
@@ -58,6 +46,7 @@ public class DetalhesActivity extends AppCompatActivity {
                 R.array.status_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerStatus.setAdapter(adapter);
+
 
         tarefaId = getIntent().getIntExtra("tarefa_id", -1);
         if (tarefaId == -1) {
@@ -77,7 +66,6 @@ public class DetalhesActivity extends AppCompatActivity {
 
         btnSalvar.setOnClickListener(v -> salvar());
         btnExcluir.setOnClickListener(v -> confirmarExcluir());
-        btnSelecionarImagem.setOnClickListener(v -> abrirGaleria());
     }
 
     private void carregarDados() {
@@ -90,12 +78,6 @@ public class DetalhesActivity extends AppCompatActivity {
                 spinnerStatus.setSelection(i);
                 break;
             }
-        }
-
-        if (item.getImagemUri() != null && !item.getImagemUri().isEmpty()) {
-            imgPreview.setImageURI(Uri.parse(item.getImagemUri()));
-        } else {
-            imgPreview.setImageResource(R.drawable.ic_baseline_note_24);
         }
     }
 
@@ -130,12 +112,5 @@ public class DetalhesActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("Não", null)
                 .show();
-    }
-
-    private void abrirGaleria() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.setType("image/*");
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        abrirGaleriaLauncher.launch(intent);
     }
 }
